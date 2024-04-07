@@ -3,6 +3,7 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/envoyproxy/gateway/badge)](https://securityscorecards.dev/viewer/?uri=github.com/envoyproxy/gateway)
 [![Build and Test](https://github.com/envoyproxy/gateway/actions/workflows/build_and_test.yaml/badge.svg)](https://github.com/envoyproxy/gateway/actions/workflows/build_and_test.yaml)
 [![codecov](https://codecov.io/gh/envoyproxy/gateway/branch/main/graph/badge.svg)](https://codecov.io/gh/envoyproxy/gateway)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B44042%2Fgithub.com%2Fshahar-h%2Fgateway.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B44042%2Fgithub.com%2Fshahar-h%2Fgateway?ref=badge_shield&issueType=license)
 
 Envoy Gateway is an open source project for managing Envoy Proxy as a standalone or
 Kubernetes-based application gateway.
