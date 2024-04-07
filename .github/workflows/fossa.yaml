@@ -29,10 +29,10 @@ jobs:
       - name: Run FOSSA Scan
         uses: fossas/fossa-action@47ef11b1e1e3812e88dae436ccbd2d0cbd1adab0 # v1.3.3
         with:
-          api-key: $API_KEY
+          api-key: ${{ env.API_KEY }}
       
       - name: Wait for Scan Results
         uses: fossas/fossa-action@47ef11b1e1e3812e88dae436ccbd2d0cbd1adab0 # v1.3.3
         with:
-          api-key: $API_KEY
+          api-key: ${{ env.API_KEY }}
           run-tests: true
