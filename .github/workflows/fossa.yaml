@@ -1,4 +1,4 @@
-name: FOSSA License Scanning
+name: FOSSA
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
