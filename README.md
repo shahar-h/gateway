@@ -17,7 +17,6 @@ Kubernetes-based application gateway.
 
 ## Contact
 
-
 * Slack: Join the [Envoy Slack workspace][] if you're not already a member. Otherwise, use the
   [Envoy Gateway channel][] to start collaborating with the community.
 
