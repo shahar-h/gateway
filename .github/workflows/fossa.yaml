@@ -18,10 +18,6 @@ permissions:
 jobs:
   fossa-scan:
     runs-on: ubuntu-latest
-    env:
-      # FOSSA Push-Only API Token
-      # See https://docs.fossa.com/docs/api-reference#push-only-api-token
-      API_KEY: 18777b880f6727fc399a05a82615ef2a
 
     steps:
       - name: Checkout Code
@@ -30,10 +26,10 @@ jobs:
       - name: Run FOSSA Scan
         uses: fossas/fossa-action@47ef11b1e1e3812e88dae436ccbd2d0cbd1adab0 # v1.3.3
         with:
-          api-key: ${{ env.API_KEY }}
+          api-key: ${{ secrets.FOSSA_API_KEY }}
       
       - name: Wait for Scan Completion
         uses: fossas/fossa-action@47ef11b1e1e3812e88dae436ccbd2d0cbd1adab0 # v1.3.3
         with:
-          api-key: ${{ env.API_KEY }}
+          api-key: ${{ secrets.FOSSA_API_KEY }}
           run-tests: true
