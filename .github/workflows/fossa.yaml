@@ -10,7 +10,7 @@ on:
       - "main"
   pull_request:
     branches:
-    - "main"
+      - "main"
 
 permissions:
   contents: read # to fetch code (actions/checkout)
