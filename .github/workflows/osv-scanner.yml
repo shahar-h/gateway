@@ -1,0 +1,22 @@
+name: OSV-Scanner
+
+on:
+  push:
+    branches:
+    - "main"
+  pull_request:
+    branches:
+    - "main"
+  schedule:
+  - cron: '16 11 * * 5'
+
+permissions:
+  # Only need to read contents
+  contents: read
+
+jobs:
+  osv-scan:
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@841366c79c0449d35ef4a0406bd3f433d10f4b3b"  # v1.7.2
+    permissions:
+      # Require writing security events to upload SARIF file to security tab
+      security-events: write
