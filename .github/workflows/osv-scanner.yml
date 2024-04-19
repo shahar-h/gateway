@@ -12,12 +12,12 @@ on:
   - cron: '16 11 * * 5'
 
 permissions:
-  # Only need to read contents
   contents: read
 
 jobs:
   osv-scan:
     uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@5c2a8dd5ce305749a9690018082c5501dbe1de2a  # v1.7.1
     permissions:
+      contents: read
       # Require writing security events to upload SARIF file to security tab
       security-events: write
