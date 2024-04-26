@@ -26,18 +26,18 @@ jobs:
 
       - name: Build an image from Dockerfile
         run: |
-          IMAGE=docker.io/envoy-proxy/gateway-dev TAG=${{ github.sha }} make image
+          IMAGE=envoy-proxy/gateway-dev TAG=${{ github.sha }} make image
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@d710430a6722f083d3b36b8339ff66b32f22ee55  # v0.19.0
         with:
-          image-ref: 'docker.io/envoy-proxy/gateway-dev:${{ github.sha }}'
-          format: 'template'
+          image-ref: envoy-proxy/gateway-dev:${{ github.sha }}
+          format: template
           template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@c7f9125735019aa87cfc361530512d50ea439c71  # v3.25.1
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: trivy-results.sarif
