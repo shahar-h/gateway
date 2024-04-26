@@ -34,6 +34,7 @@ jobs:
           image-ref: envoy-proxy/gateway-dev:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
+          exit-code: '1'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@c7f9125735019aa87cfc361530512d50ea439c71  # v3.25.1
