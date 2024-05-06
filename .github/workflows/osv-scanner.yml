@@ -26,7 +26,6 @@ jobs:
       security-events: write
     with:
       scan-args: |-
-        -r
         --skip-git
         --experimental-licenses=Apache-2.0,BSD-2-Clause,BSD-2-Clause-FreeBSD,BSD-3-Clause,MIT,ISC,Python-2.0,PostgreSQL,X11,Zlib
         ./
@@ -39,7 +38,6 @@ jobs:
       security-events: write
     with:
       scan-args: |-
-        -r
         --skip-git
         --experimental-licenses=Apache-2.0,BSD-2-Clause,BSD-2-Clause-FreeBSD,BSD-3-Clause,MIT,ISC,Python-2.0,PostgreSQL,X11,Zlib
         ./
