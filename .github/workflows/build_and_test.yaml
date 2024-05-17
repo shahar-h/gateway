@@ -58,6 +58,7 @@ jobs:
         files: ./coverage.xml
         name: codecov-envoy-gateway
         verbose: true
+        use_oidc: true
 
   # build:
   #   runs-on: ubuntu-latest
