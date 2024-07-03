@@ -1,0 +1,6 @@
+[[PackageOverrides]]
+name = "github.com/asaskevich/govalidator"
+version = "0.0.0-20230301143203-a9d515a09cc2"
+ecosystem = "Go"
+license.override = ["MIT"]
+
