@@ -12,7 +12,7 @@ license.override = ["Apache-2.0"]
 
 [[PackageOverrides]]
 name = "github.com/docker/cli"
-version = " 27.0.2+incompatible"
+version = "27.0.2+incompatible"
 ecosystem = "Go"
 license.override = ["Apache-2.0"]
 
