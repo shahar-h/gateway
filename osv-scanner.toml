@@ -39,4 +39,10 @@ name = "stdlib"
 ecosystem = "Go"
 license.override = ["BSD-3-Clause"]
 
+[[PackageOverrides]]
+name = "github.com/opencontainers/go-digestt"
+version = "1.0.0"
+ecosystem = "Go"
+license.override = ["Apache-2.0"]
+
 
