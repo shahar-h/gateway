@@ -16,4 +16,27 @@ version = "27.0.2+incompatible"
 ecosystem = "Go"
 license.override = ["Apache-2.0"]
 
+[[PackageOverrides]]
+name = "github.com/docker/go-metrics"
+version = "0.0.1"
+ecosystem = "Go"
+license.override = ["Apache-2.0"]
+
+[[PackageOverrides]]
+name = "github.com/moby/patternmatcher"
+version = "0.6.0"
+ecosystem = "Go"
+license.override = ["Apache-2.0"]
+
+[[PackageOverrides]]
+name = "github.com/opencontainers/go-digest"
+version = "1.0.0"
+ecosystem = "Go"
+license.override = ["Apache-2.0"]
+
+[[PackageOverrides]]
+name = "stdlib"
+ecosystem = "Go"
+license.override = ["BSD-3-Clause"]
+
 
