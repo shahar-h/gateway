@@ -7,9 +7,12 @@ package translator
 
 import (
 	"errors"
+	"strconv"
+	"strings"
 
 	xdscore "github.com/cncf/xds/go/xds/core/v3"
 	matcher "github.com/cncf/xds/go/xds/type/matcher/v3"
+	mutation_rulesv3 "github.com/envoyproxy/go-control-plane/envoy/config/common/mutation_rules/v3"
 	corev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	listenerv3 "github.com/envoyproxy/go-control-plane/envoy/config/listener/v3"
 	tls_inspectorv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/listener/tls_inspector/v3"
@@ -17,6 +20,7 @@ import (
 	hcmv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/network/http_connection_manager/v3"
 	tcpv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/network/tcp_proxy/v3"
 	udpv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/udp/udp_proxy/v3"
+	early_header_mutationv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/http/early_header_mutation/header_mutation/v3"
 	preservecasev3 "github.com/envoyproxy/go-control-plane/envoy/extensions/http/header_formatters/preserve_case/v3"
 	customheaderv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/http/original_ip_detection/custom_header/v3"
 	quicv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/transport_sockets/quic/v3"
@@ -84,7 +88,7 @@ func http2ProtocolOptions(opts *ir.HTTP2Settings) *corev3.Http2ProtocolOptions {
 		opts = &ir.HTTP2Settings{}
 	}
 
-	return &corev3.Http2ProtocolOptions{
+	out := &corev3.Http2ProtocolOptions{
 		MaxConcurrentStreams: &wrapperspb.UInt32Value{
 			Value: ptr.Deref(opts.MaxConcurrentStreams, http2MaxConcurrentStreamsLimit),
 		},
@@ -95,6 +99,14 @@ func http2ProtocolOptions(opts *ir.HTTP2Settings) *corev3.Http2ProtocolOptions {
 			Value: ptr.Deref(opts.InitialConnectionWindowSize, http2InitialConnectionWindowSize),
 		},
 	}
+
+	if opts.ResetStreamOnError != nil {
+		out.OverrideStreamErrorOnInvalidHttpMessage = &wrapperspb.BoolValue{
+			Value: *opts.ResetStreamOnError,
+		}
+	}
+
+	return out
 }
 
 func xffNumTrustedHops(clientIPDetection *ir.ClientIPDetectionSettings) uint32 {
@@ -226,6 +238,9 @@ func (t *Translator) addHCMToXDSListener(xdsListener *listenerv3.Listener, irLis
 		statPrefix = "http"
 	}
 
+	// Append port to the statPrefix.
+	statPrefix = strings.Join([]string{statPrefix, strconv.Itoa(int(irListener.Port))}, "-")
+
 	// Client IP detection
 	useRemoteAddress := true
 	originalIPDetectionExtensions := originalIPDetectionExtensions(irListener.ClientIPDetection)
@@ -261,9 +276,10 @@ func (t *Translator) addHCMToXDSListener(xdsListener *listenerv3.Listener, irLis
 		CommonHttpProtocolOptions: &corev3.HttpProtocolOptions{
 			HeadersWithUnderscoresAction: buildHeadersWithUnderscoresAction(irListener.Headers),
 		},
-		Tracing:                   hcmTracing,
-		ForwardClientCertDetails:  buildForwardClientCertDetailsAction(irListener.Headers),
-		PreserveExternalRequestId: ptr.Deref(irListener.Headers, ir.HeaderSettings{}).PreserveXRequestID,
+		Tracing:                       hcmTracing,
+		ForwardClientCertDetails:      buildForwardClientCertDetailsAction(irListener.Headers),
+		PreserveExternalRequestId:     ptr.Deref(irListener.Headers, ir.HeaderSettings{}).PreserveXRequestID,
+		EarlyHeaderMutationExtensions: buildEarlyHeaderMutation(irListener.Headers),
 	}
 
 	if mgr.ForwardClientCertDetails == hcmv3.HttpConnectionManager_APPEND_FORWARD || mgr.ForwardClientCertDetails == hcmv3.HttpConnectionManager_SANITIZE_SET {
@@ -352,6 +368,73 @@ func (t *Translator) addHCMToXDSListener(xdsListener *listenerv3.Listener, irLis
 	return nil
 }
 
+func buildEarlyHeaderMutation(headers *ir.HeaderSettings) []*corev3.TypedExtensionConfig {
+	if headers == nil || (len(headers.EarlyAddRequestHeaders) == 0 && len(headers.EarlyRemoveRequestHeaders) == 0) {
+		return nil
+	}
+
+	var mutationRules []*mutation_rulesv3.HeaderMutation
+
+	for _, header := range headers.EarlyAddRequestHeaders {
+		var appendAction corev3.HeaderValueOption_HeaderAppendAction
+		if header.Append {
+			appendAction = corev3.HeaderValueOption_APPEND_IF_EXISTS_OR_ADD
+		} else {
+			appendAction = corev3.HeaderValueOption_OVERWRITE_IF_EXISTS_OR_ADD
+		}
+		// Allow empty headers to be set, but don't add the config to do so unless necessary
+		if len(header.Value) == 0 {
+			mutationRules = append(mutationRules, &mutation_rulesv3.HeaderMutation{
+				Action: &mutation_rulesv3.HeaderMutation_Append{
+					Append: &corev3.HeaderValueOption{
+						Header: &corev3.HeaderValue{
+							Key: header.Name,
+						},
+						AppendAction:   appendAction,
+						KeepEmptyValue: true,
+					},
+				},
+			})
+		} else {
+			for _, val := range header.Value {
+				mutationRules = append(mutationRules, &mutation_rulesv3.HeaderMutation{
+					Action: &mutation_rulesv3.HeaderMutation_Append{
+						Append: &corev3.HeaderValueOption{
+							Header: &corev3.HeaderValue{
+								Key:   header.Name,
+								Value: val,
+							},
+							AppendAction:   appendAction,
+							KeepEmptyValue: val == "",
+						},
+					},
+				})
+			}
+		}
+	}
+
+	for _, header := range headers.EarlyRemoveRequestHeaders {
+		mr := &mutation_rulesv3.HeaderMutation{
+			Action: &mutation_rulesv3.HeaderMutation_Remove{
+				Remove: header,
+			},
+		}
+
+		mutationRules = append(mutationRules, mr)
+	}
+
+	earlyHeaderMutationAny, _ := anypb.New(&early_header_mutationv3.HeaderMutation{
+		Mutations: mutationRules,
+	})
+
+	return []*corev3.TypedExtensionConfig{
+		{
+			Name:        "envoy.http.early_header_mutation.header_mutation",
+			TypedConfig: earlyHeaderMutationAny,
+		},
+	}
+}
+
 func addServerNamesMatch(xdsListener *listenerv3.Listener, filterChain *listenerv3.FilterChain, hostnames []string) error {
 	// Dont add a filter chain match if the hostname is a wildcard character.
 	if len(hostnames) > 0 && hostnames[0] != "*" {
@@ -403,12 +486,15 @@ func addXdsTCPFilterChain(xdsListener *listenerv3.Listener, irRoute *ir.TCPRoute
 	isTLSTerminate := irRoute.TLS != nil && irRoute.TLS.Terminate != nil
 	statPrefix := "tcp"
 	if isTLSPassthrough {
-		statPrefix = "passthrough"
+		statPrefix = "tls-passthrough"
 	}
 
 	if isTLSTerminate {
-		statPrefix = "terminate"
+		statPrefix = "tls-terminate"
 	}
+
+	// Append port to the statPrefix.
+	statPrefix = strings.Join([]string{statPrefix, strconv.Itoa(int(xdsListener.Address.GetSocketAddress().GetPortValue()))}, "-")
 
 	mgr := &tcpv3.TcpProxy{
 		AccessLog:  buildXdsAccessLog(accesslog, false),
