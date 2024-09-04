@@ -689,6 +689,11 @@ func (in *DestinationSetting) DeepCopyInto(out *DestinationSetting) {
 		*out = new(uint32)
 		**out = **in
 	}
+	if in.Priority != nil {
+		in, out := &in.Priority, &out.Priority
+		*out = new(uint32)
+		**out = **in
+	}
 	if in.Endpoints != nil {
 		in, out := &in.Endpoints, &out.Endpoints
 		*out = make([]*DestinationEndpoint, len(*in))
@@ -3097,16 +3102,6 @@ func (in *UDPRoute) DeepCopyInto(out *UDPRoute) {
 	if in.LoadBalancer != nil {
 		in, out := &in.LoadBalancer, &out.LoadBalancer
 		*out = new(LoadBalancer)
-		(*in).DeepCopyInto(*out)
-	}
-	if in.Timeout != nil {
-		in, out := &in.Timeout, &out.Timeout
-		*out = new(Timeout)
-		(*in).DeepCopyInto(*out)
-	}
-	if in.BackendConnection != nil {
-		in, out := &in.BackendConnection, &out.BackendConnection
-		*out = new(BackendConnection)
 		(*in).DeepCopyInto(*out)
 	}
 	if in.DNS != nil {
