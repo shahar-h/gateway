@@ -26,6 +26,8 @@ jobs:
       scan-args: |-
         --skip-git
         --recursive
+        --config
+        tools/osv-scanner/config.toml
         ./
 
   scan-pr:
@@ -36,8 +38,11 @@ jobs:
       contents: read
       security-events: write
     with:
+      # TODO enable call analysis once https://github.com/google/osv-scanner/issues/1220 is resolved
       scan-args: |-
         --skip-git
         --recursive
+        --config=tools/osv-scanner/config.toml
+        --no-call-analysis=go
         ./
 
