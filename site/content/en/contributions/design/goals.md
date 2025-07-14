@@ -3,7 +3,7 @@ title: "Goals"
 weight: 1
 ---
 
-The high-level goal of the Envoy Gateway project is to attract more users to Envoy by lowering barriers to adoption
+The high-level goal of the Envoy Gateway project is to attract more users to Envoy by lowering barriers to adoption 
 through expressive, extensible, role-oriented APIs that support a multitude of ingress and L7/L4 traffic routing
 use cases; and provide a common foundation for vendors to build value-added products without having to re-engineer
 fundamental interactions.
@@ -12,9 +12,9 @@ fundamental interactions.
 
 ### Expressive API
 
-The Envoy Gateway project will expose a simple and expressive API, with defaults set for many capabilities.
+The Envoy Gateway project will expose a simple and expressive API, with defaults set for many capabilities.  
 
-The API will be the Kubernetes-native [Gateway API][], plus Envoy-specific extensions and extension points.  This
+The API will be the Kubernetes-native [Gateway API][], plus Envoy-specific extensions and extension points.  This.  
 expressive and familiar API will make Envoy accessible to more users, especially application developers, and make Envoy
 a stronger option for "getting started" as compared to other proxies.  Application developers will use the API out of
 the box without needing to understand in-depth concepts of Envoy Proxy or use OSS wrappers.  The API will use familiar
