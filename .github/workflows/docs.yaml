@@ -32,13 +32,38 @@ jobs:
       with:
         files: site/content/*
         config_file: ".github/markdown_lint_config.json"
-
-    - name: Install linkinator
-      run: npm install -g linkinator@6.0.4
+    - name: Generate docs
+      run: make docs
 
     - name: Check links
-      run: make docs docs-check-links
-
+      uses: JustinBeckwith/linkinator-action@989d4a35b136884610cf66f0e43d994294fb7b00  # v2
+      with:
+        paths: site/public/
+        concurrency: 25
+        retryErrors: true
+        retry: true
+        retryErrorsCount: 5
+        verbosity: error
+        # TODO: github.com does not allow access too often, there are a lot of 429 errors
+        #       find a way to remove github.com from ignore list
+        # TODO: example.com is not a valid domain, we should remove it from ignore list
+        # TODO: https://www.gnu.org/software/make became unstable, we should remove it from ignore list later
+        linksToSkip: >-
+          opentelemetry.io
+          github.com
+          jwt.io
+          githubusercontent.com
+          example.com
+          github.io
+          gnu.org
+          _print
+          canva.com
+          sched.co
+          sap.com
+          httpbin.org
+          nemlig.com
+          verve.com
+          developer.hashicorp.com
   docs-build:
     runs-on: ubuntu-latest
     needs: docs-lint
