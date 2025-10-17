@@ -4,6 +4,7 @@ CLEAN_NODE_MODULES ?= true
 
 ##@ Docs
 
+
 .PHONY: docs-gen
 docs-gen: docs.clean helm-readme-gen docs-api copy-current-release-docs docs-sync-owners ## Generate Envoy Gateway Docs Sources
 	@$(LOG_TARGET)
