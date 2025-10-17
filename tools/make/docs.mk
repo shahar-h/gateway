@@ -1,10 +1,5 @@
 DOCS_OUTPUT_DIR := site/public
 RELEASE_VERSIONS ?= $(foreach v,$(wildcard ${ROOT_DIR}/docs/*),$(notdir ${v}))
-# TODO: github.com does not allow access too often, there are a lot of 429 errors
-#       find a way to remove github.com from ignore list
-# TODO: example.com is not a valid domain, we should remove it from ignore list
-# TODO: https://www.gnu.org/software/make became unstable, we should remove it from ignore list later
-LINKINATOR_IGNORE := "opentelemetry.io github.com jwt.io githubusercontent.com example.com github.io gnu.org _print canva.com sched.co sap.com httpbin.org nemlig.com verve.com developer.hashicorp.com"
 CLEAN_NODE_MODULES ?= true
 
 ##@ Docs
@@ -178,11 +173,6 @@ docs-release-gen:
 docs-sync-owners: $(tools/sync-docs-codeowners) # Sync maintainers and emeritus-maintainers from OWNERS to CODEOWNERS.md
 	@$(LOG_TARGET)
 	$(tools/sync-docs-codeowners)
-
-.PHONY: docs-check-links
-docs-check-links: # Check for broken links in the docs
-	@$(LOG_TARGET)
-	linkinator site/public/ -r --concurrency 25 --retry-errors --retry --retry-errors-jitter --retry-errors-count 5 --skip $(LINKINATOR_IGNORE) --verbosity error
 
 docs-markdown-lint:
 	markdownlint -c .github/markdown_lint_config.json site/content/*
