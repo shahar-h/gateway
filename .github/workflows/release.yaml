@@ -8,6 +8,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
       - "v*.*.*"
+      - "!v*.*.*-rc.0"
 
 jobs:
   # For push event, we run benchmark test here because we need to
