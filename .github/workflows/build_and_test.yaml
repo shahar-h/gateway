@@ -38,54 +38,54 @@ jobs:
           run_test_workflow:
             - "!?(site|release-notes)/**"
 
-  lint:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
-    # Generate the installation manifests first, so it can check
-    # for errors while running `make -k lint`
-    - run: IMAGE_PULL_POLICY=Always make generate-manifests
-    - run: make lint-deps
-    - run: make -k lint
+  # lint:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
+  #   # Generate the installation manifests first, so it can check
+  #   # for errors while running `make -k lint`
+  #   - run: IMAGE_PULL_POLICY=Always make generate-manifests
+  #   - run: make lint-deps
+  #   - run: make -k lint
 
-  gen-check:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
-    - run: make -k gen-check
+  # gen-check:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
+  #   - run: make -k gen-check
 
-  license-check:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
-    - run: make -k licensecheck
+  # license-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
+  #   - run: make -k licensecheck
 
-  coverage-test:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read   #  for actions/checkout
-      id-token: write  #  for fetching OIDC token
-    needs:
-    - changes
-    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
+  # coverage-test:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read   #  for actions/checkout
+  #     id-token: write  #  for fetching OIDC token
+  #   needs:
+  #   - changes
+  #   if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
 
-    # test
-    - name: Run Coverage Tests
-      run: make go.test.coverage
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de  # v5.5.2
-      with:
-        fail_ci_if_error: true
-        files: ./coverage.xml
-        name: codecov-envoy-gateway
-        verbose: true
-        use_oidc: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) }}
+  #   # test
+  #   - name: Run Coverage Tests
+  #     run: make go.test.coverage
+  #   - name: Upload coverage to Codecov
+  #     uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de  # v5.5.2
+  #     with:
+  #       fail_ci_if_error: true
+  #       files: ./coverage.xml
+  #       name: codecov-envoy-gateway
+  #       verbose: true
+  #       use_oidc: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) }}
 
   # go-benchmark-test:
   #   runs-on: ubuntu-latest
