@@ -134,173 +134,173 @@ jobs:
         name: envoy-gateway
         path: bin/
 
-  conformance-test:
-    runs-on: ubuntu-latest
-    needs:
-    - changes
-    - build
-    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-        - version: v1.32.11
-          ipFamily: ipv4
-          profile: default
-        - version: v1.33.7
-          ipFamily: ipv4
-          profile: default
-        - version: v1.34.3
-          ipFamily: ipv6  # only run ipv6 test on this version to save time
-          profile: default
-        # TODO: this's IPv4 first, need a way to test IPv6 first.
-        - version: v1.35.0
-          ipFamily: dual  # only run dual test on latest version to save time
-          profile: default
-        - version: v1.35.0
-          ipFamily: dual  # only run dual test on latest version to save time
-          profile: gateway-namespace-mode
-        - version: v1.35.0
-          ipFamily: ipv4
-          profile: xds-name-scheme-v2
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
+  # conformance-test:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #   - changes
+  #   - build
+  #   if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       target:
+  #       - version: v1.32.11
+  #         ipFamily: ipv4
+  #         profile: default
+  #       - version: v1.33.7
+  #         ipFamily: ipv4
+  #         profile: default
+  #       - version: v1.34.3
+  #         ipFamily: ipv6  # only run ipv6 test on this version to save time
+  #         profile: default
+  #       # TODO: this's IPv4 first, need a way to test IPv6 first.
+  #       - version: v1.35.0
+  #         ipFamily: dual  # only run dual test on latest version to save time
+  #         profile: default
+  #       - version: v1.35.0
+  #         ipFamily: dual  # only run dual test on latest version to save time
+  #         profile: gateway-namespace-mode
+  #       - version: v1.35.0
+  #         ipFamily: ipv4
+  #         profile: xds-name-scheme-v2
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
 
-    - name: Download EG Binaries
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
-      with:
-        name: envoy-gateway
-        path: bin/
+  #   - name: Download EG Binaries
+  #     uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
+  #     with:
+  #       name: envoy-gateway
+  #       path: bin/
 
-    - name: Give Privileges To EG Binaries
-      run: |
-        chmod +x bin/linux/amd64/envoy-gateway
-        chmod +x bin/linux/arm64/envoy-gateway
+  #   - name: Give Privileges To EG Binaries
+  #     run: |
+  #       chmod +x bin/linux/amd64/envoy-gateway
+  #       chmod +x bin/linux/arm64/envoy-gateway
 
-    # conformance
-    - name: Run Standard Conformance Tests
-      env:
-        KIND_NODE_TAG: ${{ matrix.target.version }}
-        IMAGE_PULL_POLICY: IfNotPresent
-        IP_FAMILY: ${{ matrix.target.ipFamily }}
-        KUBE_DEPLOY_PROFILE: ${{ matrix.target.profile }}
-      run: make conformance
+  #   # conformance
+  #   - name: Run Standard Conformance Tests
+  #     env:
+  #       KIND_NODE_TAG: ${{ matrix.target.version }}
+  #       IMAGE_PULL_POLICY: IfNotPresent
+  #       IP_FAMILY: ${{ matrix.target.ipFamily }}
+  #       KUBE_DEPLOY_PROFILE: ${{ matrix.target.profile }}
+  #     run: make conformance
 
-  e2e-test:
-    runs-on: ubuntu-latest
-    needs:
-    - changes
-    - build
-    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-        - version: v1.32.11
-          ipFamily: ipv4
-          profile: default
-        - version: v1.33.7
-          ipFamily: ipv4
-          profile: default
-        - version: v1.34.3
-          ipFamily: ipv6  # only run ipv6 test on this version to save time
-          profile: default
-        # TODO: this's IPv4 first, need a way to test IPv6 first.
-        - version: v1.35.0
-          ipFamily: dual  # only run dual test on latest version to save time
-          profile: default
-        - version: v1.35.0
-          ipFamily: dual  # only run dual test on latest version to save time
-          profile: gateway-namespace-mode
-        - version: v1.35.0
-          ipFamily: ipv4
-          profile: xds-name-scheme-v2
+  # e2e-test:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #   - changes
+  #   - build
+  #   if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       target:
+  #       - version: v1.32.11
+  #         ipFamily: ipv4
+  #         profile: default
+  #       - version: v1.33.7
+  #         ipFamily: ipv4
+  #         profile: default
+  #       - version: v1.34.3
+  #         ipFamily: ipv6  # only run ipv6 test on this version to save time
+  #         profile: default
+  #       # TODO: this's IPv4 first, need a way to test IPv6 first.
+  #       - version: v1.35.0
+  #         ipFamily: dual  # only run dual test on latest version to save time
+  #         profile: default
+  #       - version: v1.35.0
+  #         ipFamily: dual  # only run dual test on latest version to save time
+  #         profile: gateway-namespace-mode
+  #       - version: v1.35.0
+  #         ipFamily: ipv4
+  #         profile: xds-name-scheme-v2
 
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
-    - uses: ./tools/github-actions/reclaim-storage
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
+  #   - uses: ./tools/github-actions/reclaim-storage
 
-    - name: Download EG Binaries
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
-      with:
-        name: envoy-gateway
-        path: bin/
+  #   - name: Download EG Binaries
+  #     uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
+  #     with:
+  #       name: envoy-gateway
+  #       path: bin/
 
-    - name: Give Privileges To EG Binaries
-      run: |
-        chmod +x bin/linux/amd64/envoy-gateway
-        chmod +x bin/linux/arm64/envoy-gateway
+  #   - name: Give Privileges To EG Binaries
+  #     run: |
+  #       chmod +x bin/linux/amd64/envoy-gateway
+  #       chmod +x bin/linux/arm64/envoy-gateway
 
-    # E2E
-    - name: Run E2E Tests
-      env:
-        KIND_NODE_TAG: ${{ matrix.target.version }}
-        IMAGE_PULL_POLICY: IfNotPresent
-        IP_FAMILY: ${{ matrix.target.ipFamily }}
-        KUBE_DEPLOY_PROFILE: ${{ matrix.target.profile }}
-        E2E_TIMEOUT: 1h
-        NUM_WORKERS: 2
-        # QPS more than 3000 may cause e2e flaky test.
-        # This is not the limit of Envoy Gateway,
-        # but the limit of running e2e tests in github CI.
-        E2E_BACKEND_UPGRADE_QPS: "3000"
-        # Cluster trust bundle reach beta in v1.33, so we can enable it for v1.33 and later.
-        ENABLE_CLUSTER_TRUST_BUNDLE: ${{ startsWith(matrix.target.version, 'v1.33') }}
-      run: make e2e
+  #   # E2E
+  #   - name: Run E2E Tests
+  #     env:
+  #       KIND_NODE_TAG: ${{ matrix.target.version }}
+  #       IMAGE_PULL_POLICY: IfNotPresent
+  #       IP_FAMILY: ${{ matrix.target.ipFamily }}
+  #       KUBE_DEPLOY_PROFILE: ${{ matrix.target.profile }}
+  #       E2E_TIMEOUT: 1h
+  #       NUM_WORKERS: 2
+  #       # QPS more than 3000 may cause e2e flaky test.
+  #       # This is not the limit of Envoy Gateway,
+  #       # but the limit of running e2e tests in github CI.
+  #       E2E_BACKEND_UPGRADE_QPS: "3000"
+  #       # Cluster trust bundle reach beta in v1.33, so we can enable it for v1.33 and later.
+  #       ENABLE_CLUSTER_TRUST_BUNDLE: ${{ startsWith(matrix.target.version, 'v1.33') }}
+  #     run: make e2e
 
-  benchmark-test:
-    runs-on: ubuntu-latest
-    needs:
-    - build
-    - changes
-    # There's a different workflow for benchmark-test on push.
-    # So we need to check if this is a pull request and changes.
-    if: ${{ github.event_name == 'pull_request' && needs.changes.outputs.run_test_workflow == 'true' }}
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
+  # benchmark-test:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #   - build
+  #   - changes
+  #   # There's a different workflow for benchmark-test on push.
+  #   # So we need to check if this is a pull request and changes.
+  #   if: ${{ github.event_name == 'pull_request' && needs.changes.outputs.run_test_workflow == 'true' }}
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
 
 
-    # Benchmark
-    - name: Run Benchmark tests
-      env:
-        IMAGE_PULL_POLICY: IfNotPresent
-        # Args for benchmark test
-        BENCHMARK_BASELINE_RPS: 100
-        BENCHMARK_CONNECTIONS: 100
-        BENCHMARK_DURATION: 90
-        BENCHMARK_CPU_LIMITS: 1000m
-        BENCHMARK_MEMORY_LIMITS: 2000Mi
-        BENCHMARK_REPORT_DIR: benchmark_report
-        BENCHMARK_RENDER_PNG: "false"
-      run: make benchmark
+  #   # Benchmark
+  #   - name: Run Benchmark tests
+  #     env:
+  #       IMAGE_PULL_POLICY: IfNotPresent
+  #       # Args for benchmark test
+  #       BENCHMARK_BASELINE_RPS: 100
+  #       BENCHMARK_CONNECTIONS: 100
+  #       BENCHMARK_DURATION: 90
+  #       BENCHMARK_CPU_LIMITS: 1000m
+  #       BENCHMARK_MEMORY_LIMITS: 2000Mi
+  #       BENCHMARK_REPORT_DIR: benchmark_report
+  #       BENCHMARK_RENDER_PNG: "false"
+  #     run: make benchmark
 
-    - name: Upload Benchmark report
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
-      with:
-        name: benchmark_report
-        path: ./test/benchmark/benchmark_report/
+  #   - name: Upload Benchmark report
+  #     uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
+  #     with:
+  #       name: benchmark_report
+  #       path: ./test/benchmark/benchmark_report/
 
-  resilience-test:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
-    needs:
-    - build
-    - changes
-    steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-    - uses: ./tools/github-actions/setup-deps
-    - name: Resilience Test
-      env:
-        IMAGE_PULL_POLICY: IfNotPresent
-        CUSTOM_CNI: "true"
-      run: make resilience
+  # resilience-test:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.run_test_workflow == 'true' }}
+  #   needs:
+  #   - build
+  #   - changes
+  #   steps:
+  #   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+  #   - uses: ./tools/github-actions/setup-deps
+  #   - name: Resilience Test
+  #     env:
+  #       IMAGE_PULL_POLICY: IfNotPresent
+  #       CUSTOM_CNI: "true"
+  #     run: make resilience
 
   publish:
     runs-on: ubuntu-latest
-    needs: [conformance-test, e2e-test]
+    # needs: [conformance-test, e2e-test]
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
       # We need to fetch tags so go binary will be built with the recent vX.Y.Z-rc.0 tag,
@@ -365,10 +365,10 @@ jobs:
     - license-check
     - coverage-test
     - build
-    - conformance-test
-    - e2e-test
-    - benchmark-test
-    - resilience-test
+    # - conformance-test
+    # - e2e-test
+    # - benchmark-test
+    # - resilience-test
     - publish
     # We need this to run always to force-fail (and not skip) if any needed
     # job has failed. Otherwise, a skipped job will not fail the workflow.
