@@ -258,7 +258,7 @@ jobs:
         E2E_BACKEND_UPGRADE_QPS: "3000"
         # Cluster trust bundle reach beta in v1.33, so we can enable it for v1.33 and later.
         ENABLE_CLUSTER_TRUST_BUNDLE: ${{ startsWith(matrix.target.version, 'v1.33') }}
-      run:  exit 0  # make e2e
+      run: exit 0  # make e2e
 
   benchmark-test:
     runs-on: ubuntu-latest
@@ -284,7 +284,7 @@ jobs:
         BENCHMARK_MEMORY_LIMITS: 2000Mi
         BENCHMARK_REPORT_DIR: benchmark_report
         BENCHMARK_RENDER_PNG: "false"
-      run: exit 0 # make benchmark
+      run: exit 0  # make benchmark
 
     # - name: Upload Benchmark report
     #   uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
