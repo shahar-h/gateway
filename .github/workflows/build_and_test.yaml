@@ -336,11 +336,11 @@ jobs:
 
     - name: Build and Push EG Commit Image
       # tag is set to the short SHA of the commit
-      run: make image.push.multiarch PLATFORMS="linux_amd64 linux_arm64" IMAGE=shahar-h/gateway-dev
+      run: make image.push.multiarch PLATFORMS="linux_amd64 linux_arm64" IMAGE=shaharharari/gateway-dev
 
     - name: Build and Push EG Latest Image
       # tag is set to `latest` when pushing to main branch
-      run: make image.push.multiarch TAG=latest PLATFORMS="linux_amd64 linux_arm64" IMAGE=shahar-h/gateway-dev
+      run: make image.push.multiarch TAG=latest PLATFORMS="linux_amd64 linux_arm64" IMAGE=shaharharari/gateway-dev
 
     - name: Build and Push EG Latest Helm Chart
       # use `0.0.0` as the default latest version.
@@ -377,6 +377,11 @@ jobs:
         name: envoy-gateway
         path: bin/
 
+    - name: Give Privileges To EG Binaries
+      run: |
+        chmod +x bin/linux/amd64/envoy-gateway
+        chmod +x bin/linux/arm64/envoy-gateway
+
     - name: Login to DockerHub
       uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9  # v3.7.0
       with:
@@ -387,7 +392,7 @@ jobs:
       run: make image.multiarch.setup
 
     - name: Build and Push EG Release Image
-      run: make image.push.multiarch PLATFORMS="linux_amd64 linux_arm64" IMAGE=shahar-h/gateway TAG=${{ env.release_tag }}
+      run: make image.push.multiarch PLATFORMS="linux_amd64 linux_arm64" IMAGE=shaharharari/gateway TAG=${{ env.release_tag }}
 
     - name: Download Benchmark Report
       uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
@@ -399,12 +404,12 @@ jobs:
       run: cd release-artifacts && zip -r benchmark_report.zip benchmark_report
 
     - name: Generate Release Artifacts
-      run: IMAGE_PULL_POLICY=IfNotPresent make generate-artifacts IMAGE=shahar-h/gateway TAG=${{ env.release_tag }} OUTPUT_DIR=release-artifacts
+      run: IMAGE_PULL_POLICY=IfNotPresent make generate-artifacts IMAGE=shaharharari/gateway TAG=${{ env.release_tag }} OUTPUT_DIR=release-artifacts
 
     - name: Build and Push EG Release Helm Chart
       run: |
-        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=${{ env.release_tag }} IMAGE=docker.io/shahar-h/gateway TAG=${{ env.release_tag }} make helm-package helm-push
-        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=${{ env.without_v_release_tag }} IMAGE=docker.io/shahar-h/gateway TAG=${{ env.release_tag }} make helm-package helm-push
+        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=${{ env.release_tag }} IMAGE=docker.io/shaharharari/gateway TAG=${{ env.release_tag }} make helm-package helm-push
+        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=${{ env.without_v_release_tag }} IMAGE=docker.io/shaharharari/gateway TAG=${{ env.release_tag }} make helm-package helm-push
 
     - name: Package release binaries
       run: |
