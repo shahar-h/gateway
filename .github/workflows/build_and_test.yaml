@@ -346,8 +346,8 @@ jobs:
       # use `0.0.0` as the default latest version.
       # use `Always` image pull policy for latest version.
       run: |
-        IMAGE_PULL_POLICY=Always OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=v0.0.0-latest TAG=latest make helm-push
-        IMAGE_PULL_POLICY=Always OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=0.0.0-latest TAG=latest make helm-push
+        IMAGE_PULL_POLICY=Always OCI_REGISTRY=oci://docker.io/shaharharari CHART_VERSION=v0.0.0-latest TAG=latest make helm-push
+        IMAGE_PULL_POLICY=Always OCI_REGISTRY=oci://docker.io/shaharharari CHART_VERSION=0.0.0-latest TAG=latest make helm-push
 
   release:
     runs-on: ubuntu-22.04
@@ -408,8 +408,8 @@ jobs:
 
     - name: Build and Push EG Release Helm Chart
       run: |
-        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=${{ env.release_tag }} IMAGE=docker.io/shaharharari/gateway TAG=${{ env.release_tag }} make helm-package helm-push
-        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=${{ env.without_v_release_tag }} IMAGE=docker.io/shaharharari/gateway TAG=${{ env.release_tag }} make helm-package helm-push
+        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/shaharharari CHART_VERSION=${{ env.release_tag }} IMAGE=docker.io/shaharharari/gateway TAG=${{ env.release_tag }} make helm-package helm-push
+        IMAGE_PULL_POLICY=IfNotPresent OCI_REGISTRY=oci://docker.io/shaharharari CHART_VERSION=${{ env.without_v_release_tag }} IMAGE=docker.io/shaharharari/gateway TAG=${{ env.release_tag }} make helm-package helm-push
 
     - name: Package release binaries
       run: |
