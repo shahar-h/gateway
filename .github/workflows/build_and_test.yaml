@@ -122,7 +122,7 @@ jobs:
       # https://github.com/actions/checkout/issues/1471#issuecomment-1755639487
       # https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
       with:
-        fetch-depth: ${{ github.ref == 'refs/heads/main' && 0 || 1 }}
+        fetch-depth: ${{ github.ref == 'refs/heads/main' && '0' || '1' }}
         filter: ${{ github.ref == 'refs/heads/main' && 'tree:0' || '' }}
     - uses: ./tools/github-actions/setup-deps
 
