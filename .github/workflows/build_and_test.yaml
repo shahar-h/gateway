@@ -127,13 +127,14 @@ jobs:
     - uses: ./tools/github-actions/setup-deps
 
     - name: Build EG Multiarch Binaries
-      # Build all platforms for release tags, only linux for other builds
+      env:
+        IS_RELEASE_TAG: ${{ github.ref_type == 'tag' && !endsWith(github.ref_name, '-rc.0') }}
       run: |
-        PLATFORMS="linux_amd64 linux_arm64"
-        if [[ "${{ github.ref_type }}" == "tag" ]]; then
-          PLATFORMS=""
+        if [[ "$IS_RELEASE_TAG" == "true" ]]; then
+          make build-multiarch  # all platforms (default)
+        else
+          make build-multiarch PLATFORMS="linux_amd64 linux_arm64"
         fi
-        make build-multiarch PLATFORMS="$PLATFORMS"
 
     - name: Upload EG Binaries
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
