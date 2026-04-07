@@ -29,6 +29,11 @@ endif
 
 ROOT_PACKAGE=github.com/envoyproxy/gateway
 
+# Disable cgo globally. This project has no cgo code and disabling it
+# avoids the need for C toolchains and system headers (e.g. libbtrfs-dev)
+# pulled in transitively through container/storage dependencies.
+export CGO_ENABLED=0
+
 RELEASE_VERSION=$(shell cat VERSION)
 
 # Set Root Directory Path
