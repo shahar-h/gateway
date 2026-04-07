@@ -29,10 +29,10 @@ endif
 
 ROOT_PACKAGE=github.com/envoyproxy/gateway
 
-# Disable cgo globally. This project has no cgo code and disabling it
-# avoids the need for C toolchains and system headers (e.g. libbtrfs-dev)
-# pulled in transitively through container/storage dependencies.
-export CGO_ENABLED=0
+# Exclude the btrfs graph driver pulled in transitively through
+# container/storage dependencies. This project does not use btrfs
+# and excluding it avoids the need for libbtrfs-dev headers in CI.
+export GOFLAGS += -tags=exclude_graphdriver_btrfs
 
 RELEASE_VERSION=$(shell cat VERSION)
 
