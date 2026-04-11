@@ -12,6 +12,9 @@ $(tools.bindir)/%: $(tools.srcdir)/%.sh
 # `pip install`-able things
 # =========================
 #
+# Each tool has a requirements.in (direct deps) and requirements.txt (lockfile with hashes).
+# Run `make pip-compile` to regenerate requirements.txt from requirements.in.
+#
 tools/codespell    = $(tools.bindir)/codespell
 tools/yamllint     = $(tools.bindir)/yamllint
 tools/sphinx-build = $(tools.bindir)/sphinx-build
@@ -19,13 +22,22 @@ tools/release-notes-docs = $(tools.bindir)/release-notes-docs
 $(tools.bindir)/%.d/venv: $(tools.srcdir)/%/requirements.txt
 	mkdir -p $(@D)
 	python3 -m venv $@
-	$@/bin/pip3 install --trusted-host pypi.org --trusted-host files.pythonhosted.org --disable-pip-version-check -r $< || (rm -rf $@; exit 1)
+	$@/bin/pip3 install --trusted-host pypi.org --trusted-host files.pythonhosted.org --disable-pip-version-check --require-hashes -r $< || (rm -rf $@; exit 1)
 $(tools.bindir)/%: $(tools.bindir)/%.d/venv	
 	@if [ -e $(tools.srcdir)/$*/$*.sh ]; then \
 		ln -sf ../../$(tools.srcdir)/$*/$*.sh $@; \
 	else \
 		ln -sf $*.d/venv/bin/$* $@; \
 	fi
+
+PIP_COMPILE_SRCS = $(wildcard $(tools.srcdir)/*/requirements.in)
+PIP_COMPILE_TXTS = $(PIP_COMPILE_SRCS:.in=.txt)
+
+.PHONY: pip-compile
+pip-compile: $(PIP_COMPILE_TXTS) ## Regenerate requirements.txt lockfiles from requirements.in
+
+$(tools.srcdir)/%/requirements.txt: $(tools.srcdir)/%/requirements.in
+	pip-compile --generate-hashes --strip-extras --no-header --quiet --output-file=$@ $<
 
 # kube-api-linter
 # ===============
