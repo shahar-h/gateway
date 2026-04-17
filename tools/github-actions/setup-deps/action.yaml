@@ -14,3 +14,9 @@ runs:
           go.sum
           tools/go.sum
           test/go.sum
+    - shell: bash
+      name: Pre-populate Go module cache for all workspaces
+      run: |
+        for dir in . tools test; do
+          (cd "$dir" && go mod download)
+        done
