@@ -29,6 +29,11 @@ endif
 
 ROOT_PACKAGE=github.com/envoyproxy/gateway
 
+# Exclude the btrfs graph driver pulled in transitively through
+# container/storage dependencies. This project does not use btrfs
+# and excluding it avoids the need for libbtrfs-dev headers in CI.
+export GOFLAGS += -tags=exclude_graphdriver_btrfs
+
 RELEASE_VERSION=$(shell cat VERSION)
 
 # Set Root Directory Path
