@@ -9,10 +9,11 @@ IMAGE_PREFIX ?= envoyproxy/gateway-
 APP_NAME ?= extension-server
 TAG ?= latest
 GO_LDFLAGS ?=
+BUILDX_EXTRA_ARGS ?=
 
 .PHONY: docker-buildx
 docker-buildx: build
-	docker buildx build -f tools/docker/extension-server/Dockerfile . -t $(IMAGE_PREFIX)$(APP_NAME):$(TAG) --load
+	docker buildx build -f tools/docker/extension-server/Dockerfile . -t $(IMAGE_PREFIX)$(APP_NAME):$(TAG) $(BUILDX_EXTRA_ARGS) --load
 
 build: generate manifests
 	mkdir -p bin
