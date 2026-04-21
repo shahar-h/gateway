@@ -17,10 +17,20 @@ kube-build-examples-image:
 	@$(LOG_TARGET)
 	@for app in $(EXAMPLE_APPS); do \
 		pushd $(ROOT_DIR)/examples/$$app; \
+		cache_args=""; \
+		if [ "$(GITHUB_ACTIONS)" = "true" ]; then \
+			# Use the GHA cache backend to persist Docker layers across CI runs. \
+			# - scope: isolates cache per example app so they don't evict each other. \
+			# - mode=max: exports all intermediate layers (not just the final stage), \
+			#   which is required for multi-stage builds to cache the builder stage \
+			#   layers like `go mod download`. mode=min would only cache the final \
+			#   distroless stage, missing the expensive build layers entirely. \
+			cache_args="--cache-from type=gha,scope=example-$$app --cache-to type=gha,mode=max,scope=example-$$app"; \
+		fi; \
 		if [ -n "$(ENVOY_PROXY_VERSION)" ]; then \
-			make docker-buildx ENVOY_VERSION=$(ENVOY_PROXY_VERSION); \
+			make docker-buildx ENVOY_VERSION=$(ENVOY_PROXY_VERSION) BUILDX_EXTRA_ARGS="$$cache_args"; \
 		else \
-			make docker-buildx; \
+			make docker-buildx BUILDX_EXTRA_ARGS="$$cache_args"; \
 		fi; \
 		popd; \
 	done
