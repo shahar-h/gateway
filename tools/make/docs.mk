@@ -1,3 +1,4 @@
+# dummy
 DOCS_OUTPUT_DIR := site/public
 RELEASE_VERSIONS ?= $(foreach v,$(wildcard ${ROOT_DIR}/docs/*),$(notdir ${v}))
 # TODO: github.com does not allow access too often, there are a lot of 429 errors
